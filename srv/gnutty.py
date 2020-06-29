@@ -6,7 +6,7 @@
 Gnutty Server
 """
 
-from srv.server import Server
+from srv.server import GnuttyCore
 from srv import constants
 from srv.request_methods import RequestMethods
 from srv.exceptions.invalid_method_exception import InvalidMethodException
@@ -15,7 +15,7 @@ class Gnutty:
     """
     Gnutty Server class
     """
-    
+
     def __init__(self, host="0.0.0.0", port=constants.PORT):
         """
         Constructor method for gnutty server
@@ -24,9 +24,12 @@ class Gnutty:
         """
         self.host = host
         self.port = port
-        self.server = Server(host=self.host, port=self.port)
+        self.server = GnuttyCore(host=self.host, port=self.port)
 
-    def __create_endpoint(self, path, method):
+    def __create_endpoint(self, path: str, method: str):
+        """
+        Create an endpoint on the nutty server
+        """
         if method not in vars(RequestMethods).values():
             raise InvalidMethodException(
                 "Method {} is not valid".format(method)
@@ -35,5 +38,5 @@ class Gnutty:
             self.server.get(path=path)
 
     def create_get(self, path):
-        self.__create_endpoint(path=path, method=RequestMethods.GET)
+        self.__create_endpoint(path=path, method=RequestMethods.GET.value)
 

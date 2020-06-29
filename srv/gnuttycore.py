@@ -2,6 +2,9 @@
 @author atomicfruitcake
 
 @date 2020
+
+Core HTTP Server. This is the backbone of Gnutty that defines responses to
+HTTP request methods and handles the request object to return the response
 """
 
 import socket
@@ -13,7 +16,7 @@ from srv.response_codes import ResponseCodes
 from srv import constants
 from srv.response import Response
 
-class Server:
+class GnuttyCore:
 
     def __init__(self, host="0.0.0.0", port=constants.PORT):
         logger.info("Starting Gnutty server on port {}".format(port))
@@ -22,7 +25,9 @@ class Server:
         self.sock.bind(server_addr)
         self.handlers = []
 
+
     def add_handler(self, handler):
+        logger.info("Adding {} handler to Gnutty server")
         self.handlers.append(handler)
 
 
@@ -30,7 +35,7 @@ class Server:
     def get(self, path):
 
         def decorator(f):
-            class DynamicHandler(Handler):
+            class __Handler(Handler):
 
                 def can_handle(self, request):
                     return request.method == "GET" and request.path == path
@@ -39,15 +44,16 @@ class Server:
                     self.log_request(request=request)
                     return f(request)
 
-            self.handlers.append(DynamicHandler())
+            self.handlers.append(__Handler())
             return f
 
         return decorator
 
+
     def post(self, path):
 
         def decorator(f):
-            class DynamicHandler(Handler):
+            class __Handler(Handler):
 
                 def can_handle(self, request):
                     return request.method == "POST" and request.path == path
@@ -56,15 +62,16 @@ class Server:
                     self.log_request(request)
                     return f(request)
 
-            self.handlers.append(DynamicHandler())
+            self.handlers.append(__Handler())
             return f
 
         return decorator
 
+
     def patch(self, path):
 
         def decorator(f):
-            class DynamicHandler(Handler):
+            class __Handler(Handler):
 
                 def can_handle(self, request):
                     return request.method == "PATCH" and request.path == path
@@ -73,15 +80,16 @@ class Server:
                     self.log_request(request)
                     return f(request)
 
-            self.handlers.append(DynamicHandler())
+            self.handlers.append(__Handler())
             return f
 
         return decorator
 
+
     def delete(self, path):
 
         def decorator(f):
-            class DynamicHandler(Handler):
+            class __Handler(Handler):
 
                 def can_handle(self, request):
                     return request.method == "DELETE" and request.path == path
@@ -90,14 +98,15 @@ class Server:
                     self.log_request(request)
                     return f(request)
 
-            self.handlers.append(DynamicHandler())
+            self.handlers.append(__Handler())
             return f
         return decorator
+
 
     def any(self):
 
         def decorator(f):
-            class DynamicHandler(Handler):
+            class __Handler(Handler):
                 def can_handle(self, request):
                     return True
 
@@ -105,10 +114,11 @@ class Server:
                     self.log_request(request)
                     return f(request)
 
-            self.handlers.append(DynamicHandler())
+            self.handlers.append(__Handler())
             return f
 
         return decorator
+
 
     def serve(self):
         self.sock.listen()
@@ -125,14 +135,17 @@ class Server:
             finally:
                 _sock.close()
 
+
     def handle_client(self, sock):
         client_handler = ClientHandler(sock, self.handlers)
-        request = client_handler.parse_request()
-        response = client_handler.handle_request(request)
-        client_handler.send_response(response)
+        client_handler.send_response(
+            client_handler.handle_request(
+                client_handler.parse_request()
+            )
+        )
 
 
-server = Server(port=8000)
+server = GnuttyCore(port=8000)
 
 
 @server.get("/")

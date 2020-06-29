@@ -58,6 +58,7 @@ class ClientHandler:
             code = ResponseCodes.OK.value
             body = response
         elif isinstance(response, Response):
+            print(response)
             response.send()
             return
         else:
