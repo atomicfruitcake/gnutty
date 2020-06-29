@@ -2,7 +2,10 @@
 @author atomicfruitcake
 
 @date 2020
+
+HTTP Response Codes class
 """
+
 from enum import IntEnum
 
 class ResponseCodes(IntEnum):

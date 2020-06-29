@@ -6,8 +6,11 @@
 Handle HTTP requests and format for client response
 """
 
-from srv.request import Request
+from socket import gethostname
+
 from srv.exceptions.no_handler_exception import NoHandlerException
+from srv.request import Request
+from srv.response import Response
 from srv.response_codes import ResponseCodes
 
 
@@ -22,9 +25,9 @@ class ClientHandler:
         first_line = raw_request.pop(0)
         request.method, request.path, request.http_version = first_line.split()
         request.http_version = request.http_version[len("HTTP/"):]
-
         request.headers = self.parse_headers(raw_request)
         request.body = "\n".join(raw_request)
+        request.hostname = gethostname()
 
         return request
 
@@ -46,25 +49,29 @@ class ClientHandler:
                 return handler.handle(request)
         raise NoHandlerException()
 
-    def send_response(self, response):
+    def send_response(self, response, content_type="text/html"):
         """
         Send an HTTP response object to the client
-        :param response:
-        :return:
+        :param response: HTTP Response object
         """
         if isinstance(response, str):
             code = ResponseCodes.OK.value
             body = response
+        elif isinstance(response, Response):
+            response.send()
+            return
         else:
             code, body = response
         body = body.encode()
 
-        code_name = ResponseCodes(code).name
-
-        self.socket.send("HTTP/1.0 {} {}\r\n".format(code, code_name).encode())
-
-        self.send_header("Server", "Python HTTP server 0.1")
-        self.send_header("Content-Type", "text/html")
+        self.socket.send(
+            "HTTP/1.0 {code} {codename}\r\n".format(
+                code=code,
+                codename=ResponseCodes(code).name
+            ).encode()
+        )
+        self.send_header("Server", "Gnutty HTTP server 0.1")
+        self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", len(body))
 
         self.finish_headers()
