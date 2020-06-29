@@ -146,8 +146,6 @@ def root(request):
 
 @server.post("/test")
 def new(request):
-    print(request.body)
-
     return 200, request.body
 
 
