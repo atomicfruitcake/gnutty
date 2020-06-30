@@ -34,7 +34,7 @@ class GnuttyCore:
 
     def get(self, path):
 
-        def decorator(f):
+        def dec(f):
             class __Handler(Handler):
 
                 def can_handle(self, request):
@@ -47,12 +47,16 @@ class GnuttyCore:
             self.handlers.append(__Handler())
             return f
 
-        return decorator
+        return dec
 
 
     def post(self, path):
-
-        def decorator(f):
+        """
+        Handle post methods for a given path by performing a given function on the request
+        :param path: str - Local
+        :return:
+        """
+        def dec(f):
             class __Handler(Handler):
 
                 def can_handle(self, request):
@@ -65,12 +69,12 @@ class GnuttyCore:
             self.handlers.append(__Handler())
             return f
 
-        return decorator
+        return dec
 
 
     def patch(self, path):
 
-        def decorator(f):
+        def dec(f):
             class __Handler(Handler):
 
                 def can_handle(self, request):
@@ -83,12 +87,12 @@ class GnuttyCore:
             self.handlers.append(__Handler())
             return f
 
-        return decorator
+        return dec
 
 
     def delete(self, path):
 
-        def decorator(f):
+        def dec(f):
             class __Handler(Handler):
 
                 def can_handle(self, request):
@@ -100,12 +104,12 @@ class GnuttyCore:
 
             self.handlers.append(__Handler())
             return f
-        return decorator
+        return dec
 
 
     def any(self):
 
-        def decorator(f):
+        def dec(f):
             class __Handler(Handler):
                 def can_handle(self, request):
                     return True
@@ -117,7 +121,7 @@ class GnuttyCore:
             self.handlers.append(__Handler())
             return f
 
-        return decorator
+        return dec
 
 
     def serve(self):
@@ -138,34 +142,35 @@ class GnuttyCore:
 
     def handle_client(self, sock):
         client_handler = ClientHandler(sock, self.handlers)
-        client_handler.send_response(
-            client_handler.handle_request(
-                client_handler.parse_request()
-            )
-        )
-
+        request = client_handler.parse_request()
+        response = client_handler.handle_request(request)
+        client_handler.send_response(response=response)
 
 server = GnuttyCore(port=8000)
 
 
 @server.get("/")
 def root(request):
-    return "OK"
+    return Response(
+        code=ResponseCodes.OK.value,
+        body="OK",
+        content_type="text"
+    )
 
 @server.get("/favicon.ico")
 def root(request):
-    return "OK"
+    f = open("../favicon.ico")
+    return 200, f
 
 
 @server.post("/test")
-def new(request):
+def test(request):
     return 200, request.body
 
 
 @server.any()
 def not_found(request):
     return Response(
-        socket=socket.socket(),
         code=ResponseCodes.NOT_FOUND.value,
         body="NOT FOUND",
         content_type="text"

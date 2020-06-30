@@ -20,10 +20,12 @@ class ClientHandler:
         self.handlers = handlers
 
     def parse_request(self):
+        """
+        Parse a request received on the open socker
+        """
         raw_request = self.socket.recv(2048).decode().splitlines()
         request = Request()
-        first_line = raw_request.pop(0)
-        request.method, request.path, request.http_version = first_line.split()
+        request.method, request.path, request.http_version = raw_request.pop(0).split()
         request.http_version = request.http_version[len("HTTP/"):]
         request.headers = self.parse_headers(raw_request)
         request.body = "\n".join(raw_request)
@@ -58,9 +60,8 @@ class ClientHandler:
             code = ResponseCodes.OK.value
             body = response
         elif isinstance(response, Response):
-            print(response)
-            response.send()
-            return
+            response.send(socket=self.socket)
+            return True
         else:
             code, body = response
         body = body.encode()
@@ -77,6 +78,7 @@ class ClientHandler:
 
         self.finish_headers()
         self.socket.send(body)
+        return True
 
     def send_header(self, name, value):
         self.socket.send("{}: {}\r\n".format(name, value).encode())

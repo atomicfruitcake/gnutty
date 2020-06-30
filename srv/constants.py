@@ -6,5 +6,5 @@
 Constants used in the application
 """
 
-PORT = 80
-LOG_DIR = "/var/log"
+PORT = 8000
+LOG_DIR = "/Users/sambass/workspace/logs"
