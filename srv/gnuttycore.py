@@ -7,14 +7,17 @@ Core HTTP Server. This is the backbone of Gnutty that defines responses to
 HTTP request methods and handles the request object to return the response
 """
 
+import os
 import socket
+from pathlib import Path
 
-from srv.logger import logger
-from srv.handlers.handler import Handler
-from srv.handlers.client_handler import ClientHandler
-from srv.response_codes import ResponseCodes
 from srv import constants
+from srv.handlers.client_handler import ClientHandler
+from srv.handlers.handler import Handler
+from srv.logger import logger
 from srv.response import Response
+from srv.response_codes import ResponseCodes
+
 
 class GnuttyCore:
 
@@ -159,8 +162,13 @@ def root(request):
 
 @server.get("/favicon.ico")
 def root(request):
-    f = open("../favicon.ico")
-    return 200, f
+    return 200, open(
+        os.path.join(
+            Path(os.path.dirname(__file__)).parent,
+            "favicon.ico"
+        ),
+        "rb"
+    ).read()
 
 
 @server.post("/test")

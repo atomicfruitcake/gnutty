@@ -64,7 +64,9 @@ class ClientHandler:
             return True
         else:
             code, body = response
-        body = body.encode()
+
+        if type(body) is not bytes:
+            body = body.encode()
 
         self.socket.send(
             "HTTP/1.0 {code} {codename}\r\n".format(
