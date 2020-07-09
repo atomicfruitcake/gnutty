@@ -5,6 +5,8 @@
 
 Gnutty Server
 """
+import os
+from pathlib import Path
 
 from srv.gnuttycore import GnuttyCore
 from srv import constants
@@ -24,10 +26,12 @@ class Gnutty(GnuttyCore):
         :param host: str - Network interface IP where server will run
         :param port: int - port where the server can be accessed from
         """
-        super(Gnutty, self).__init__()
         self.host = host
         self.port = port
-        self.core = GnuttyCore(host=self.host, port=self.port)
+        super(Gnutty, self).__init__(
+            host=self.host,
+            port=self.port
+        )
 
     def __create_endpoint(self, path: str, method: str):
         """
@@ -37,27 +41,38 @@ class Gnutty(GnuttyCore):
             raise InvalidMethodException(
                 "Method {} is not valid".format(method)
             )
-        if method == RequestMethods.GET:
-            self.core.get(path=path)
+        # if method == RequestMethods.GET:
+        #     self.core.get(path=path)
 
     def create_get(self, path):
         self.__create_endpoint(path=path, method=RequestMethods.GET.value)
 
-def test_gnutty():
+    @staticmethod
+    def send_image(filepath):
+        return 200, open(filepath, "rb").read()
+
+    
+
+def run_gnutty():
     server = Gnutty(port=8000)
-    server.create_get("/")
-
-
     @server.get("/")
     def root(request):
-        # return 200, "OK"
+        print(request)
         return Response(
             code=ResponseCodes.OK.value, body="OK", content_type="text/html"
         )
 
     @server.get("/favicon.ico")
-    def root(request):
-        return Response()
+    def favicon(request):
+        return server.send_image(
+            filepath=os.path.join(
+                Path(
+                    os.path.dirname(__file__)
+                ).parent,
+                "favicon.ico"
+            )
+        )
+
 
     @server.post("/test")
     def new(request):
@@ -67,5 +82,7 @@ def test_gnutty():
     def not_found(request):
         return Response(code=ResponseCodes.NOT_FOUND.value, body="NOT FOUND", content_type="text/html")
 
-    if __name__ == "__main__":
-        server.serve()
+    server.serve()
+
+if __name__ == "__main__":
+    run_gnutty()

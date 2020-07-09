@@ -6,18 +6,12 @@
 Core HTTP Server. This is the backbone of Gnutty that defines responses to
 HTTP request methods and handles the request object to return the response
 """
-
-import os
 import socket
-from pathlib import Path
 
 from srv import constants
 from srv.handlers.client_handler import ClientHandler
 from srv.handlers.handler import Handler
 from srv.logger import logger
-from srv.response import Response
-from srv.response_codes import ResponseCodes
-
 
 class GnuttyCore:
 
@@ -54,11 +48,7 @@ class GnuttyCore:
 
 
     def post(self, path):
-        """
-        Handle post methods for a given path by performing a given function on the request
-        :param path: str - Local
-        :return:
-        """
+
         def dec(f):
             class __Handler(Handler):
 
@@ -148,41 +138,3 @@ class GnuttyCore:
         request = client_handler.parse_request()
         response = client_handler.handle_request(request)
         client_handler.send_response(response=response)
-
-server = GnuttyCore(port=8000)
-
-
-@server.get("/")
-def root(request):
-    return Response(
-        code=ResponseCodes.OK.value,
-        body="OK",
-        content_type="text"
-    )
-
-@server.get("/favicon.ico")
-def root(request):
-    return 200, open(
-        os.path.join(
-            Path(os.path.dirname(__file__)).parent,
-            "favicon.ico"
-        ),
-        "rb"
-    ).read()
-
-
-@server.post("/test")
-def test(request):
-    return 200, request.body
-
-
-@server.any()
-def not_found(request):
-    return Response(
-        code=ResponseCodes.NOT_FOUND.value,
-        body="NOT FOUND",
-        content_type="text"
-    )
-
-if __name__ == "__main__":
-    server.serve()

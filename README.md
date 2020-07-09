@@ -7,7 +7,7 @@ dependencies to worry about. Gnutty used nothing but Python
 
 To start the example server, run
 ```
-python3 ./srv/gnuttycore.py
+python3 ./srv/gnutty.py
 ```
 From the root of the repository.
 
