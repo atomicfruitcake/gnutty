@@ -13,15 +13,15 @@ class Handler:
     def can_handle(self, request) -> bool:
         """
         Set whether the handler is able to handle the given response
-        :param request: HTTP request object
-        :return: bool - True if can handle request, False otherwise
+        :param request: HTTP __request object
+        :return: bool - True if can handle __request, False otherwise
         """
         return False
 
     def handle(self, request):
         """
-        Handle a request to the server
-        :param request: HTTP request object
+        Handle a __request to the server
+        :param request: HTTP __request object
         :raises RuntimeErrror
         """
         raise RuntimeError("abstract")
@@ -29,7 +29,7 @@ class Handler:
     @staticmethod
     def log_request(request):
         logger.info(
-            "Received {method} request from {sender_ip} to path {path}".format(
+            "Received {method} __request from {sender_ip} to path {path}".format(
                 method=request.method,
                 sender_ip=request.hostname,
                 path=request.path

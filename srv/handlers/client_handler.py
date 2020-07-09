@@ -9,7 +9,7 @@ Handle HTTP requests and format for client response
 from socket import gethostname
 
 from srv.exceptions.no_handler_exception import NoHandlerException
-from srv.request import Request
+from srv.request import IRequest
 from srv.response import Response
 from srv.response_codes import ResponseCodes
 
@@ -21,17 +21,20 @@ class ClientHandler:
 
     def parse_request(self):
         """
-        Parse a request received on the open socker
+        Parse a __request received on the open socker
         """
         raw_request = self.socket.recv(2048).decode().splitlines()
-        request = Request()
-        request.method, request.path, request.http_version = raw_request.pop(0).split()
-        request.http_version = request.http_version[len("HTTP/"):]
-        request.headers = self.parse_headers(raw_request)
-        request.body = "\n".join(raw_request)
-        request.hostname = gethostname()
+        irequest = IRequest()
+        irequest.method, irequest.path, irequest.http_version = raw_request.pop(0).split()
+        irequest.http_version = irequest.http_version[len("HTTP/"):]
+        irequest.headers = self.parse_headers(raw_request)
+        irequest.body = "\n".join(raw_request)
+        irequest.hostname = gethostname()
+        # TODO Get content type to interface
+        # irequest.content_type = raw_request.content_type
 
-        return request
+
+        return irequest
 
     @staticmethod
     def parse_headers(raw_request):

@@ -4,7 +4,7 @@
 @date 2020
 
 Core HTTP Server. This is the backbone of Gnutty that defines responses to
-HTTP request methods and handles the request object to return the response
+HTTP __request methods and handles the __request object to return the response
 """
 import socket
 

@@ -3,7 +3,7 @@
 
 @date 2020
 
-HTTP request methods class
+HTTP __request methods class
 """
 
 

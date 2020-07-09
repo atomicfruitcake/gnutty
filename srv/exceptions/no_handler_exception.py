@@ -3,7 +3,7 @@
 
 @date 2020
 
-Exception class for when a request has no associated rotating_file_handler
+Exception class for when a __request has no associated rotating_file_handler
 """
 from .abstract_exception import AbstractException
 

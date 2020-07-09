@@ -14,6 +14,7 @@ from srv.request_methods import RequestMethods
 from srv.exceptions.invalid_method_exception import InvalidMethodException
 from srv.response import Response
 from srv.response_codes import ResponseCodes
+from srv.request import Request
 
 
 class Gnutty(GnuttyCore):
@@ -38,17 +39,6 @@ class Gnutty(GnuttyCore):
             else favicon
         )
 
-    def __create_endpoint(self, path: str, method: str):
-        """
-        Create an endpoint on the nutty server
-        """
-        if method not in vars(RequestMethods).values():
-            raise InvalidMethodException("Method {} is not valid".format(method))
-
-    def create_get(self, path):
-        self.__create_endpoint(path=path, method=RequestMethods.GET.value)
-
-
 
 def run_gnutty():
     server = Gnutty(port=8000)
@@ -61,22 +51,22 @@ def run_gnutty():
     def favicon(request):
         return Response(
             body=open(
-                os.path.join(Path(os.path.dirname(__file__)).parent, "favicon.ico"),
+                os.path.join(
+                    Path(os.path.dirname(__file__)).parent,
+                    "favicon.ico"
+                ),
                 "rb",
             ).read()
         )
 
     @server.post("/test")
     def new(request):
-        print(request)
-        response = {
-            "msg": "Received request : {}".format(request.body)
-        }
-        bdy = request.body
+        req = Request(request)
+        print(req)
+        print(req.content_type)
         return Response(
             body=request.body
         )
-        return 200, request.body
 
     @server.any()
     def not_found(request):
