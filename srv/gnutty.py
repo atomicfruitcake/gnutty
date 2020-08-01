@@ -8,13 +8,11 @@ Gnutty Server
 import os
 from pathlib import Path
 
-from srv.gnuttycore import GnuttyCore
 from srv import constants
-from srv.request_methods import RequestMethods
-from srv.exceptions.invalid_method_exception import InvalidMethodException
+from srv.gnuttycore import GnuttyCore
+from srv.request import Request
 from srv.response import Response
 from srv.response_codes import ResponseCodes
-from srv.request import Request
 
 
 class Gnutty(GnuttyCore):
@@ -62,8 +60,6 @@ def run_gnutty():
     @server.post("/test")
     def new(request):
         req = Request(request)
-        print(req)
-        print(req.content_type)
         return Response(
             body=request.body
         )

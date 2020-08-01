@@ -12,6 +12,7 @@ from srv import constants
 from srv.handlers.client_handler import ClientHandler
 from srv.handlers.handler import Handler
 from srv.logger import logger
+from srv.request import Request
 
 class GnuttyCore:
 
@@ -29,16 +30,16 @@ class GnuttyCore:
 
 
 
-    def get(self, path):
+    def get(self, path: str):
 
         def dec(f):
             class __Handler(Handler):
 
-                def can_handle(self, request):
+                def can_handle(self, request: Request):
                     return request.method == "GET" and request.path == path
 
-                def handle(self, request):
-                    self.log_request(request=request)
+                def handle(self, request: Request):
+                    self.log_request(request)
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -47,15 +48,15 @@ class GnuttyCore:
         return dec
 
 
-    def post(self, path):
+    def post(self, path: str):
 
         def dec(f):
             class __Handler(Handler):
 
-                def can_handle(self, request):
+                def can_handle(self, request: Request):
                     return request.method == "POST" and request.path == path
 
-                def handle(self, request):
+                def handle(self, request: Request):
                     self.log_request(request)
                     return f(request)
 
@@ -65,15 +66,33 @@ class GnuttyCore:
         return dec
 
 
-    def patch(self, path):
+    def put(self, path: str):
 
         def dec(f):
             class __Handler(Handler):
 
-                def can_handle(self, request):
+                def can_handle(self, request: Request):
+                    return request.method == "PUT" and request.path == path
+
+                def handle(self, request: Request):
+                    self.log_request(request)
+                    return f(request)
+
+            self.handlers.append(__Handler())
+            return f
+
+        return dec
+
+
+    def patch(self, path: str):
+
+        def dec(f):
+            class __Handler(Handler):
+
+                def can_handle(self, request: Request):
                     return request.method == "PATCH" and request.path == path
 
-                def handle(self, request):
+                def handle(self, request: Request):
                     self.log_request(request)
                     return f(request)
 
@@ -83,20 +102,55 @@ class GnuttyCore:
         return dec
 
 
-    def delete(self, path):
+    def delete(self, path: str):
 
         def dec(f):
             class __Handler(Handler):
 
-                def can_handle(self, request):
+                def can_handle(self, request: Request):
                     return request.method == "DELETE" and request.path == path
 
-                def handle(self, request):
+                def handle(self, request: Request):
                     self.log_request(request)
                     return f(request)
 
             self.handlers.append(__Handler())
             return f
+
+        return dec
+
+    def options(self, path: str):
+
+        def dec(f):
+            class __Handler(Handler):
+
+                def can_handle(self, request: Request):
+                    return request.method == "OPTIONS" and request.path == path
+
+                def handle(self, request: Request):
+                    self.log_request(request)
+                    return f(request)
+
+            self.handlers.append(__Handler())
+            return f
+
+        return dec
+
+    def trace(self, path: str):
+
+        def dec(f):
+            class __Handler(Handler):
+
+                def can_handle(self, request: Request):
+                    return request.method == "TRACE" and request.path == path
+
+                def handle(self, request: Request):
+                    self.log_request(request)
+                    return f(request)
+
+            self.handlers.append(__Handler())
+            return f
+
         return dec
 
 
@@ -104,10 +158,10 @@ class GnuttyCore:
 
         def dec(f):
             class __Handler(Handler):
-                def can_handle(self, request):
+                def can_handle(self, request: Request):
                     return True
 
-                def handle(self, request):
+                def handle(self, request: Request):
                     self.log_request(request)
                     return f(request)
 

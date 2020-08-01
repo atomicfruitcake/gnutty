@@ -3,10 +3,11 @@
 
 @date 2020
 """
+from abc import ABC, abstractmethod
 
 from srv.logger import logger
 
-class Handler:
+class Handler(ABC):
     """
     Handler Class object
     """
@@ -18,11 +19,12 @@ class Handler:
         """
         return False
 
+    @abstractmethod
     def handle(self, request):
         """
         Handle a __request to the server
         :param request: HTTP __request object
-        :raises RuntimeErrror
+        :raises RuntimeError
         """
         raise RuntimeError("abstract")
 

@@ -5,40 +5,34 @@
 
 HTTP Request object
 """
-from ast import literal_eval
 
+from srv.methods import METHODS
 
-from srv.irequest import IRequest
+class Request:
 
-class Request(IRequest):
-
-    def __init__(self, request):
-        """
-        Constructor method for the Request object
-        :param request:
-        """
-        self.__request = request
-
-    @property
-    def content_type(self):
-        return self.__request.content_type
+    def __init__(
+        self,
+        body,
+        headers,
+        method,
+        path,
+        hostname,
+        content_type="application/json",
+        http_version=1.0,
+    ):
+        self.body = body
+        self.headers = headers
+        self.method = self.validate_method(method)
+        self.path = path
+        self.hostname = hostname
+        self.content_type = content_type
+        self.http_version = http_version
 
     @property
     def content_length(self):
-        return self.__request.content_length
+        return len(self.body)
 
-    @property
-    def path(self):
-        return self.__request.path
-
-
-    @property
-    def method(self):
-        return self.__request.method
-
-    @property
-    def body(self):
-        if self.content_type == "application/json":
-            return literal_eval(self.__request.body)
-        else:
-            return self.__request.body
+    @staticmethod
+    def validate_method(method):
+        assert method.upper() in METHODS
+        return method.upper()

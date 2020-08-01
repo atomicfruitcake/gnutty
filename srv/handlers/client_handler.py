@@ -9,7 +9,7 @@ Handle HTTP requests and format for client response
 from socket import gethostname
 
 from srv.exceptions.no_handler_exception import NoHandlerException
-from srv.request import IRequest
+from srv.request import Request
 from srv.response import Response
 from srv.response_codes import ResponseCodes
 
@@ -21,20 +21,15 @@ class ClientHandler:
 
     def parse_request(self):
         """
-        Parse a __request received on the open socker
+        Parse a request received on the open socket
         """
-        raw_request = self.socket.recv(2048).decode().splitlines()
-        irequest = IRequest()
-        irequest.method, irequest.path, irequest.http_version = raw_request.pop(0).split()
-        irequest.http_version = irequest.http_version[len("HTTP/"):]
-        irequest.headers = self.parse_headers(raw_request)
-        irequest.body = "\n".join(raw_request)
-        irequest.hostname = gethostname()
-        # TODO Get content type to interface
-        # irequest.content_type = raw_request.content_type
-
-
-        return irequest
+        raw = self.socket.recv(2048).decode().splitlines()
+        method, path, http_version = raw.pop(0).split()
+        http_version = http_version[len("HTTP/"):]
+        headers = self.parse_headers(raw)
+        body = "\n".join(raw)
+        hostname = gethostname()
+        return Request(body, headers, method, path, hostname, http_version)
 
     @staticmethod
     def parse_headers(raw_request):
@@ -77,16 +72,17 @@ class ClientHandler:
                 codename=ResponseCodes(code).name
             ).encode()
         )
-        self.send_header("Server", "Gnutty HTTP server 0.1")
-        self.send_header("Content-Type", content_type)
-        self.send_header("Content-Length", len(body))
-
-        self.finish_headers()
+        self.send_headers(content_type, body)
         self.socket.send(body)
         return True
 
-    def send_header(self, name, value):
+    def __send_header(self, name, value):
         self.socket.send("{}: {}\r\n".format(name, value).encode())
 
-    def finish_headers(self):
+    def send_headers(self, content_type, body):
+        self.__send_header("Server", "Gnutty HTTP server 0.1")
+        self.__send_header("Content-Type", content_type)
+        self.__send_header("Content-Length", len(body))
         self.socket.send(b"\r\n")
+
+
