@@ -59,9 +59,9 @@ def run_gnutty():
 
     @server.post("/test")
     def new(request):
-        req = Request(request)
         return Response(
-            body=request.body
+            body=request.body,
+            content_type="application/json",
         )
 
     @server.any()
