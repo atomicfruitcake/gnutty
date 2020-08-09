@@ -6,7 +6,7 @@
 HTTP Request object
 """
 from base64 import b64decode
-
+from functools import lru_cache
 from srv.exceptions.b64_decode_exception import B64DecodeException
 from srv.methods import METHODS
 
@@ -65,6 +65,7 @@ class Request:
                 return "bearer"
 
     @property
+    @lru_cache(maxsize=128)
     def basic_auth_creds(self):
         if self.auth_type == "basic":
             self.authorization.replace("Basic", "").split()
