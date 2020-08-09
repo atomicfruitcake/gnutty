@@ -72,6 +72,7 @@ class Request:
             self.authorization.replace("Basic", "").split()
             split = self.authorization.strip().split(" ")
             if len(split) == 1:
+
                 try:
                     username, password = b64decode(split[0]).decode().split(':', 1)
                     return {
@@ -84,7 +85,7 @@ class Request:
             elif len(split) == 2:
                 if split[0].strip().lower() == 'basic':
                     try:
-                        username, password = b64decode(split[0]).decode().split(':', 1)
+                        username, password = b64decode(split[1]).decode().split(':', 1)
                         return {
                             "username": username,
                             "password": password
