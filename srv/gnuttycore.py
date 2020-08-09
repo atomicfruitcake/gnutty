@@ -7,17 +7,14 @@ Core HTTP Server. This is the backbone of Gnutty that defines responses to
 HTTP __request methods and handles the __request object to return the response
 """
 import socket
-from pathlib import Path
-import os
 
 from srv import constants
+from srv.auth import authorize
 from srv.handlers.client_handler import ClientHandler
 from srv.handlers.handler import Handler
 from srv.logger import logger
 from srv.request import Request
-from srv.response import Response
-from srv.response_codes import ResponseCodes
-
+from srv.response import Response, ResponseCodes
 
 class GnuttyCore:
 
@@ -29,12 +26,7 @@ class GnuttyCore:
         self.handlers = []
 
 
-    def add_handler(self, handler):
-        logger.info("Adding {} handler to Gnutty server")
-        self.handlers.append(handler)
-
-
-    def get(self, path: str):
+    def get(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -44,6 +36,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -52,7 +49,7 @@ class GnuttyCore:
         return dec
 
 
-    def post(self, path: str):
+    def post(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -62,6 +59,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -70,7 +72,7 @@ class GnuttyCore:
         return dec
 
 
-    def put(self, path: str):
+    def put(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -80,6 +82,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -88,7 +95,7 @@ class GnuttyCore:
         return dec
 
 
-    def patch(self, path: str):
+    def patch(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -98,6 +105,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -106,7 +118,7 @@ class GnuttyCore:
         return dec
 
 
-    def delete(self, path: str):
+    def delete(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -116,6 +128,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -123,7 +140,7 @@ class GnuttyCore:
 
         return dec
 
-    def options(self, path: str):
+    def options(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -133,6 +150,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -140,7 +162,7 @@ class GnuttyCore:
 
         return dec
 
-    def trace(self, path: str):
+    def trace(self, path: str, auth=None):
 
         def dec(f):
             class __Handler(Handler):
@@ -150,6 +172,11 @@ class GnuttyCore:
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -158,21 +185,28 @@ class GnuttyCore:
         return dec
 
 
-    def any(self):
+    def any(self, auth=None):
 
         def dec(f):
             class __Handler(Handler):
+
                 def can_handle(self, request: Request):
                     return True
 
                 def handle(self, request: Request):
                     self.log_request(request)
+                    if not authorize(request, auth):
+                        return Response(
+                            "NOT AUTHORIZED",
+                            ResponseCodes.UNAUTHORIZED.value
+                        )
                     return f(request)
 
             self.handlers.append(__Handler())
             return f
 
         return dec
+
 
     def serve(self):
         self.sock.listen()
@@ -195,3 +229,5 @@ class GnuttyCore:
         request = client_handler.parse_request()
         response = client_handler.handle_request(request)
         client_handler.send_response(response=response)
+
+

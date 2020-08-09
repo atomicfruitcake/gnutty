@@ -30,7 +30,6 @@ class Request:
         self.hostname = hostname
         self.content_type = content_type
         self.http_version = http_version
-        print(self.basic_auth_creds)
 
     @property
     def content_length(self):
@@ -64,7 +63,6 @@ class Request:
 
             if "bearer" in auth_lower:
                 return "bearer"
-
 
     @property
     def basic_auth_creds(self):

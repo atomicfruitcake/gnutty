@@ -57,7 +57,7 @@ def run_gnutty():
             ).read()
         )
 
-    @server.post("/test")
+    @server.post("/test", auth="basic")
     def new(request):
         return Response(
             body=request.body,

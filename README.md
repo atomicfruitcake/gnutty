@@ -1,9 +1,9 @@
 # GNUTTY
 Pure Python HTTP Server
 
-# How do I  this?
-So long as you have python3.4 or higher, there are no
-dependencies to worry about. Gnutty used nothing but Python
+# How do I use this?
+So long as you have Python3.4 or higher, there are no
+dependencies to worry about. Gnutty uses nothing but Python
 
 To start the example server, run
 ```

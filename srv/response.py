@@ -27,7 +27,7 @@ class Response:
         ).encode()
 
     @property
-    def headers(self):
+    def headers(self) -> list:
         return [
             "Server: Gnutty HTTP server 0.1\r\n".encode(),
             "Content-Type: {}\r\n".format(self.content_type).encode(),

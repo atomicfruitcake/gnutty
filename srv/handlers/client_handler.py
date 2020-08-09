@@ -25,11 +25,14 @@ class ClientHandler:
         """
         raw = self.socket.recv(2048).decode().splitlines()
         method, path, http_version = raw.pop(0).split()
-        http_version = http_version[len("HTTP/"):]
-        headers = self.parse_headers(raw)
-        body = "\n".join(raw)
-        hostname = gethostname()
-        return Request(body, headers, method, path, hostname, http_version)
+        return Request(
+            body="\n".join(raw),
+            headers=self.parse_headers(raw),
+            method=method,
+            path=path,
+            hostname=gethostname(),
+            http_version=http_version[len("HTTP/"):]
+        )
 
     @staticmethod
     def parse_headers(raw_request):
