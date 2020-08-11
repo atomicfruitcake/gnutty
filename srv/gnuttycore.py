@@ -15,10 +15,13 @@ from srv.handlers.handler import Handler
 from srv.logger import logger
 from srv.request import Request
 from srv.response import Response, ResponseCodes
+from srv.singleton import Singleton
 
-class GnuttyCore:
+class GnuttyCore(metaclass=Singleton):
+
 
     def __init__(self, host="0.0.0.0", port=constants.PORT):
+        super(Singleton).__init__()
         logger.info("Starting Gnutty server on port {}".format(port))
         self.sock = socket.socket()
         server_addr = host, port
