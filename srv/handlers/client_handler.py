@@ -10,8 +10,8 @@ from socket import gethostname
 
 from srv.exceptions.no_handler_exception import NoHandlerException
 from srv.request import Request
-from srv.response import Response
-from srv.response_codes import ResponseCodes
+from srv.responses.response import Response
+from srv.responses.response_codes import ResponseCodes
 
 
 class ClientHandler:

@@ -14,7 +14,7 @@ from srv.handlers.client_handler import ClientHandler
 from srv.handlers.handler import Handler
 from srv.logger import logger
 from srv.request import Request
-from srv.response import Response, ResponseCodes
+from srv.responses.not_authorized_response import NotAuthorizedResponse
 from srv.singleton import Singleton
 
 class GnuttyCore(metaclass=Singleton):
@@ -40,10 +40,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -63,10 +60,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -86,10 +80,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -109,10 +100,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -132,10 +120,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -154,10 +139,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -176,10 +158,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -199,10 +178,7 @@ class GnuttyCore(metaclass=Singleton):
                 def handle(self, request: Request):
                     self.log_request(request)
                     if not authorize(request, auth):
-                        return Response(
-                            "NOT AUTHORIZED",
-                            ResponseCodes.UNAUTHORIZED.value
-                        )
+                        return NotAuthorizedResponse()
                     return f(request)
 
             self.handlers.append(__Handler())
@@ -229,8 +205,10 @@ class GnuttyCore(metaclass=Singleton):
 
     def handle_client(self, sock):
         client_handler = ClientHandler(sock, self.handlers)
-        request = client_handler.parse_request()
-        response = client_handler.handle_request(request)
-        client_handler.send_response(response=response)
+        client_handler.send_response(
+            response=client_handler.handle_request(
+                request=client_handler.parse_request()
+            )
+        )
 
 

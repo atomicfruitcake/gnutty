@@ -6,9 +6,9 @@
 HTTP Response object
 """
 
-from srv.response_codes import ResponseCodes
+from srv.responses.response_codes import ResponseCodes
 
-class Response:
+class Response(object):
     """
     HTTP Response object class
     """

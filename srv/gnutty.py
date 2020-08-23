@@ -10,9 +10,8 @@ from pathlib import Path
 
 from srv import constants
 from srv.gnuttycore import GnuttyCore
-from srv.request import Request
-from srv.response import Response
-from srv.response_codes import ResponseCodes
+from srv.responses.response import Response
+from srv.responses.response_codes import ResponseCodes
 
 
 class Gnutty(GnuttyCore):
